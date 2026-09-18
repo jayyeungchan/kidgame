@@ -6197,27 +6197,6 @@
                 },
                 {
                   "type": "path",
-                  "id": "r3Yoo4",
-                  "x": 88.7966,
-                  "y": 75.4576,
-                  "geometry": "",
-                  "fill": "#FFE800",
-                  "width": 0,
-                  "height": 0
-                },
-                {
-                  "type": "path",
-                  "id": "sFx3X",
-                  "x": 81.3729,
-                  "y": 35.5932,
-                  "opacity": 0.35,
-                  "geometry": "",
-                  "fill": "#FFFFFF",
-                  "width": 0,
-                  "height": 0
-                },
-                {
-                  "type": "path",
                   "id": "WOFsA",
                   "x": 90.322,
                   "y": 74.8475,
@@ -6331,13 +6310,13 @@
                 {
                   "type": "path",
                   "id": "Y3fdjn",
-                  "x": 95.4068,
-                  "y": 114,
-                  "geometry": "M16.0678 0c-4.16949 9.15254-10.0678 19.11864-16.0678 28.88136",
-                  "width": 16.0678,
-                  "height": 28.8814,
+                  "x": 95,
+                  "y": 112,
+                  "geometry": "M32 0c-6 14-20 26-32 31",
+                  "width": 32,
+                  "height": 31,
                   "stroke": "#231F20",
-                  "strokeWidth": 1.6271186440677967,
+                  "strokeWidth": 2.5,
                   "strokeLinejoin": "round",
                   "strokeLinecap": "round"
                 },
@@ -6457,6 +6436,20 @@
                   "stroke": "#231F20",
                   "strokeWidth": 1.6271186440677967,
                   "strokeLinejoin": "round",
+                  "strokeLinecap": "round"
+                },
+                {
+                  "type": "path",
+                  "id": "vfpNL",
+                  "x": 60,
+                  "y": 103,
+                  "name": "红气球绳子",
+                  "geometry": "M2 0c8 16 24 30 34 38",
+                  "fill": "#00000000",
+                  "width": 37,
+                  "height": 39,
+                  "stroke": "#231F20",
+                  "strokeWidth": 2.5,
                   "strokeLinecap": "round"
                 }
               ]
