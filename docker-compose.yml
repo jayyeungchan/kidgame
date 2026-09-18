@@ -1,0 +1,8 @@
+services:
+  kidgame:
+    build: .
+    image: kidgame:latest
+    container_name: kidgame
+    ports:
+      - "8080:80"
+    restart: unless-stopped

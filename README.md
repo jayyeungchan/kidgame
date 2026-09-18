@@ -24,6 +24,22 @@
 | design/kidgame.pen | Pencil 设计稿（VS Code + Pencil 插件打开） |
 | design/exports/ | 卡通角色和奖品的高清透明 PNG 素材 |
 
+## Docker 部署
+
+本机已安装 Docker 的话，也可以用容器方式在家里的设备上长期运行：
+
+```bash
+# 方式一：docker compose（推荐，含自动重启）
+docker compose up -d          # 构建并启动，访问 http://localhost:8080
+docker compose down           # 停止
+
+# 方式二：纯 docker
+docker build -t kidgame .
+docker run -d --name kidgame -p 8080:80 --restart unless-stopped kidgame
+```
+
+启动后局域网内的设备（如 iPad）可通过 `http://<电脑IP>:8080` 直接访问。
+
 ## 小提示
 
 - 星星数量和兑换记录保存在浏览器本地：同一台电脑、同一个浏览器才延续；换设备或清除浏览器数据会重新从 0 开始
