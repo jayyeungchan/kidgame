@@ -209,6 +209,29 @@
   .sh-trapezoid{clip-path:polygon(20% 0,80% 0,100% 100%,0 100%);}
   .sh-pentagon{clip-path:polygon(50% 0,100% 38%,82% 100%,18% 100%,0 38%);}
 
+  /* ---------- 多玩法 ---------- */
+  #options.compare-panels{gap:clamp(16px,3vw,40px);}
+  .compare-panel{position:relative;flex:1;max-width:400px;min-height:230px;background:#fff;
+    border:9px solid var(--bc,#FF6B6B);border-radius:32px;display:flex;flex-wrap:wrap;align-items:center;
+    align-content:center;justify-content:center;gap:8px 10px;padding:14px;cursor:pointer;
+    box-shadow:0 8px 0 rgba(58,58,107,.14);transition:transform .12s,border-color .3s;}
+  .compare-panel:active{transform:scale(.97);}
+  .compare-panel.correct{border-color:var(--green) !important;box-shadow:0 8px 0 rgba(95,187,108,.4);animation:pop .55s;}
+  .compare-panel.dim{opacity:.3;}
+  .compare-panel.wrong{animation:shake .45s;}
+  .compare-panel .count-item{font-size:clamp(30px,4.4vw,50px);animation:none;}
+  #options.order-field{position:relative;display:block;height:clamp(220px,34vh,300px);}
+  .order-chip{position:absolute;width:clamp(52px,7vw,68px);height:clamp(52px,7vw,68px);border-radius:18px;
+    background:#fff;border:5px solid var(--bc,#FFC93C);display:flex;align-items:center;justify-content:center;
+    font-size:clamp(24px,3vw,36px);color:var(--ink);cursor:pointer;box-shadow:0 5px 0 rgba(58,58,107,.14);
+    font-family:inherit;transition:transform .15s,opacity .3s;}
+  .order-chip:active{transform:scale(.9);}
+  .order-chip.done{opacity:.2;transform:scale(.7);pointer-events:none;}
+  .order-chip.wrong{animation:shake .45s;}
+  #demoArea svg{width:min(100%,300px);height:auto;}
+  .shape.shadowed{filter:brightness(.3) saturate(.15);}
+  .cry-demo{font-size:clamp(30px,4.6vw,46px);color:var(--coral);}
+
   /* ---------- 星星商店 ---------- */
   #shopScreen{justify-content:flex-start;gap:10px;}
   .shop-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(14px,2.4vw,30px);width:100%;max-width:1200px;margin-top:8px;}
@@ -603,12 +626,25 @@ const YUE_PHRASES = [
   ['奖品', '獎品'],
   ['兑换', '兌換'],
   ['颗', '粒'],
+  ['彩虹缺了', '彩虹少咗'],
+  ['补好吧', '補返啦'],
+  ['按顺序，从1开始点一点吧', '由1開始順住點落去'],
+  ['都点完啦', '都點完喇'],
+  ['和影子一样', '同影子一樣'],
+  ['是谁在叫呀', '係邊個叫呀'],
+  ['这边的', '呢邊嘅'],
+  ['下一个', '下一個'],
+  ['哪一边', '邊一邊'],
+  ['更多', '多啲'],
+  ['真漂亮', '真靚'],
+  ['听一听', '聽一聽'],
   ['苹果', '蘋果'],
   ['这', '這'], ['个', '個'], ['几', '幾'], ['数', '數'], ['请', '請'],
   ['红', '紅'], ['黄', '黃'], ['蓝', '藍'], ['绿', '綠'], ['圆', '圓'],
   ['爱', '愛'], ['猫', '貓'], ['鸭', '鴨'], ['猪', '豬'], ['鸡', '雞'],
   ['鱼', '魚'], ['气', '氣'], ['帮', '幫'], ['点', '點'], ['宝', '寶'],
   ['贝', '貝'], ['学', '學'], ['乐', '樂'], ['园', '園'],
+  ['颜', '顏'], ['状', '狀'], ['样', '樣'], ['听', '聽'], ['补', '補'], ['边', '邊'],
   ['是', '係'],
 ];
 function yueify(s){
@@ -711,13 +747,26 @@ const DIFFS = {
   hard:  {label:'困难', stars:3, descs:{numbers:'数字 1~20 · 数到 10 · 4 个选项', colors:'7 种颜色 · 4 个选项', shapes:'10 种形状 · 4 个选项', animals:'14 种动物 · 4 个选项'}},
 };
 const DIFF_ORDER = ['easy','normal','hard'];
+function numDistractors(t, max, n){
+  const pool = [];
+  for(let x=1; x<=max; x++) if(x !== t) pool.push(x);
+  pool.sort((a,b) => Math.abs(a-t) - Math.abs(b-t));
+  return sample(pool.slice(0, Math.max(n + 3, 6)), n);
+}
+const RAINBOW_BANDS = [
+  {name:'红色', hex:'#FF5A5A'},{name:'黄色', hex:'#FFC93C'},{name:'蓝色', hex:'#4D96FF'},
+  {name:'绿色', hex:'#5FBB6C'},{name:'紫色', hex:'#A97FE8'},
+];
+const NUM_MODES = ['find','count','compare','order'];
 const GEN = {
   numbers(diff){
-    const conf = {easy:{findMax:5, countMax:3, n:2}, normal:{findMax:10, countMax:6, n:2}, hard:{findMax:20, countMax:10, n:3}}[diff];
-    if(Math.random() < 0.5){
+    const mode = localStorage.getItem('kids_force_numbers') || pick(NUM_MODES);
+    if(mode === 'find'){
+      const conf = {easy:{findMax:5, n:2}, normal:{findMax:10, n:2}, hard:{findMax:20, n:3}}[diff];
       const t = randInt(1, conf.findMax);
       const opts = shuffle([t, ...numDistractors(t, conf.findMax, conf.n)]);
       return {
+        mode:'choice', kind:'find',
         prompt:`数字 <span class="hl hl-num">${t}</span> 在哪里呀？`,
         speech:`请找一找，数字${t}在哪里？`,
         praise:`这是数字${t}！`,
@@ -725,57 +774,139 @@ const GEN = {
         options: opts.map(n=>({kind:'num', value:n})),
       };
     }
-    const t = randInt(1, conf.countMax);
-    const item = pick(COUNT_ITEMS);
-    const opts = shuffle([t, ...numDistractors(t, Math.max(conf.countMax, 5), conf.n)]);
+    if(mode === 'count'){
+      const conf = {easy:{countMax:3, n:2}, normal:{countMax:6, n:2}, hard:{countMax:10, n:3}}[diff];
+      const t = randInt(1, conf.countMax);
+      const item = pick(COUNT_ITEMS);
+      const opts = shuffle([t, ...numDistractors(t, Math.max(conf.countMax, 5), conf.n)]);
+      return {
+        mode:'choice', kind:'count',
+        prompt:`数一数，有几个${item.n}呀？`,
+        speech:`请数一数，这里有几个${item.n}呀？可以点一点帮忙数哦！`,
+        praise:`一共有${t}个${item.n}！`,
+        correctValue:t, count:t, itemEmoji:item.e,
+        options: opts.map(n=>({kind:'num', value:n})),
+      };
+    }
+    if(mode === 'compare'){
+      const item = pick(COUNT_ITEMS);
+      const maxN = diff==='easy'?3:diff==='normal'?6:9;
+      let a = randInt(1, maxN), b = randInt(1, maxN);
+      if(a === b) b = a === 1 ? a + 1 : a - 1;
+      const moreSide = Math.random() < 0.5 ? 'left' : 'right';
+      const left = moreSide === 'left' ? Math.max(a,b) : Math.min(a,b);
+      const right = moreSide === 'left' ? Math.min(a,b) : Math.max(a,b);
+      return {
+        mode:'compare', itemEmoji:item.e, left, right, moreSide,
+        prompt:`哪一边的${item.n}更多呀？`,
+        speech:`哪一边的${item.n}更多呀？点一点试试！`,
+        praise:`答对啦！这边的${item.n}更多！`,
+        wrongSpeech: ()=>`再数一数，哪一边更多呢？`,
+      };
+    }
+    const n = diff==='easy'?4:diff==='normal'?6:10;
     return {
-      prompt:`数一数，有几个${item.n}呀？`,
-      speech:`请数一数，这里有几个${item.n}呀？可以点一点帮忙数哦！`,
-      praise:`一共有${t}个${item.n}！`,
-      correctValue:t, count:t, itemEmoji:item.e,
-      options: opts.map(n=>({kind:'num', value:n})),
+      mode:'order', orderN:n,
+      prompt:`按顺序，从 <span class="hl hl-num">1</span> 开始点！`,
+      speech:`按顺序，从1开始点一点吧！`,
+      praise:`1到${n}都点完啦，太棒了！`,
     };
   },
   colors(diff){
-    const n = diff === 'hard' ? 4 : 3;
-    const pool = diff === 'easy' ? COLORS.slice(0, 4) : COLORS;
-    const picks = sample(pool, n);
-    const t = pick(picks);
+    const mode = localStorage.getItem('kids_force_colors') || (Math.random() < 0.5 ? 'find' : 'rainbow');
+    if(mode === 'find'){
+      const n = diff === 'hard' ? 4 : 3;
+      const pool = diff === 'easy' ? COLORS.slice(0, 4) : COLORS;
+      const picks = sample(pool, n);
+      const t = pick(picks);
+      return {
+        mode:'choice', kind:'find',
+        prompt:`<span class="hl" style="color:${t.hex}">${t.name}</span> 在哪里呀？`,
+        speech:`哪个是${t.name}呀？找一找！`,
+        praise:`这是${t.name}！`,
+        correctValue:t.name,
+        options: shuffle(picks).map(c=>({kind:'color', value:c.name, color:c.hex})),
+      };
+    }
+    const n = diff==='easy'?3:diff==='normal'?4:5;
+    const nOpts = diff==='hard'?4:3;
+    const bands = RAINBOW_BANDS.slice(0, n).map(b=>({...b}));
+    const mi = randInt(0, n-1);
+    bands[mi].missing = true;
+    const missing = bands[mi];
+    const others = sample(RAINBOW_BANDS.filter(c=>c.name!==missing.name), nOpts-1);
     return {
-      prompt:`<span class="hl" style="color:${t.hex}">${t.name}</span> 在哪里呀？`,
-      speech:`哪个是${t.name}呀？找一找！`,
-      praise:`这是${t.name}！`,
-      correctValue:t.name,
-      options: shuffle(picks).map(c=>({kind:'color', value:c.name, color:c.hex})),
+      mode:'choice', kind:'rainbow',
+      prompt:`彩虹缺了<span class="hl" style="color:${missing.hex}">${missing.name}</span>，点一点补好吧！`,
+      speech:`彩虹缺了${missing.name}！点一点${missing.name}，把彩虹补好吧！`,
+      praise:`彩虹补好啦，真漂亮！`,
+      correctValue:missing.name, rainbow:bands, missingColor:missing.hex,
+      options: shuffle([missing, ...others]).map(c=>({kind:'color', value:c.name, color:c.hex})),
     };
   },
   shapes(diff){
-    const pool = diff === 'easy' ? SHAPES.slice(0, 3) : SHAPES;
-    const n = diff === 'hard' ? 4 : 3;
+    const mode = localStorage.getItem('kids_force_shapes') || (Math.random() < 0.5 ? 'find' : 'shadow');
+    if(mode === 'find'){
+      const pool = diff==='easy'?SHAPES.slice(0,3):SHAPES;
+      const n = diff==='hard'?4:3;
+      const picks = sample(pool, n);
+      const t = pick(picks);
+      return {
+        mode:'choice', kind:'find',
+        prompt:`${t.name} 在哪里呀？`,
+        speech:`请找一找，${t.name}在哪里？`,
+        praise:`这就是${t.name}！`,
+        correctValue:t.name,
+        options: shuffle(picks).map(s=>({kind:'shape', value:s.name, cls:s.cls, color:pick(PALETTE)})),
+      };
+    }
+    const pool = diff==='easy'?SHAPES.slice(0,3):SHAPES;
+    const n = diff==='hard'?4:3;
     const picks = sample(pool, n);
     const t = pick(picks);
     const demo = document.createElement('div');
-    demo.className = 'shape sh-' + t.cls;
-    demo.style.setProperty('--c', pick(PALETTE));
+    demo.className = 'shape sh-' + t.cls + ' shadowed';
     return {
-      prompt:`${t.name} 在哪里呀？`,
-      speech:`请找一找，${t.name}在哪里？`,
-      praise:`这就是${t.name}！`,
+      mode:'choice', kind:'shadow',
+      prompt:`哪个和影子一样呀？`,
+      speech:`哪个形状和影子一样呀？找一找！`,
+      praise:`形状一样，答对啦！`,
       correctValue:t.name, demo,
       options: shuffle(picks).map(s=>({kind:'shape', value:s.name, cls:s.cls, color:pick(PALETTE)})),
     };
   },
   animals(diff){
-    const pool = diff === 'easy' ? ANIMALS.slice(0, 6) : ANIMALS;
-    const n = diff === 'hard' ? 4 : 3;
-    const picks = sample(pool, n);
+    const mode = localStorage.getItem('kids_force_animals') || (Math.random() < 0.5 ? 'find' : 'sound');
+    if(mode === 'find'){
+      const pool = diff==='easy'?ANIMALS.slice(0,6):ANIMALS;
+      const n = diff==='hard'?4:3;
+      const picks = sample(pool, n);
+      const t = pick(picks);
+      return {
+        mode:'choice', kind:'find',
+        prompt:`${t.name} 在哪里呀？`,
+        speech:`找一找，${t.name}在哪里呀？`,
+        praise:`是${t.name}！${t.cry}！`,
+        correctValue:t.name,
+        wrongSpeech: o => `这是${o.value}哦，再找找${t.name}吧！`,
+        options: shuffle(picks).map(a=>({kind:'emoji', value:a.name, emoji:a.emoji})),
+      };
+    }
+    const pool = diff==='easy'?ANIMALS.slice(0,6):ANIMALS;
+    const n = diff==='hard'?4:3;
+    let picks = sample(pool, n);
     const t = pick(picks);
+    picks = [t, ...sample(pool.filter(a=>a!==t && a.cry!==t.cry), n-1)];
+    const demo = document.createElement('div');
+    demo.className = 'cry-demo';
+    demo.textContent = `${t.cry}！${t.cry}！🔊`;
     return {
-      prompt:`${t.name} 在哪里呀？`,
-      speech:`找一找，${t.name}在哪里呀？`,
-      praise:`是${t.name}！${t.cry}！`,
-      correctValue:t.name,
-      wrongSpeech: o => `这是${o.value}哦，再找找${t.name}吧！`,
+      mode:'choice', kind:'sound',
+      prompt:`听一听，是谁在叫呀？`,
+      speech:`${t.cry}！${t.cry}！是谁在叫呀？`,
+      praise:`答对啦！是${t.name}！${t.cry}！`,
+      correctValue:t.name, demo,
+      wrongSpeech: o => `这是${o.value}哦，再听一听！${t.cry}！`,
       options: shuffle(picks).map(a=>({kind:'emoji', value:a.name, emoji:a.emoji})),
     };
   },
@@ -940,12 +1071,30 @@ function nextQ(){
   renderQ(state.q);
   speak(state.q.speech);
 }
+function buildRainbowSVG(bands){
+  const n = bands.length;
+  const cx = 95, base = 108, outer = 100, t = (outer - 15) / n;
+  let parts = '';
+  bands.forEach((b, i)=>{
+    const ro = outer - i*t, ri = ro - t;
+    const fill = b.missing ? '#EFEFF4' : b.hex;
+    const id = b.missing ? ' id="missingBand"' : '';
+    parts += `<path${id} d="M ${cx-ro} ${base} A ${ro} ${ro} 0 0 1 ${cx+ro} ${base} L ${cx+ri} ${base} A ${ri} ${ri} 0 0 0 ${cx-ri} ${base} Z" fill="${fill}" stroke="#fff" stroke-width="3"/>`;
+  });
+  return `<svg viewBox="0 0 190 112" xmlns="http://www.w3.org/2000/svg">${parts}</svg>`;
+}
 function renderQ(q){
   $('qText').innerHTML = q.prompt;
   const demo = $('demoArea');
   demo.innerHTML = ''; demo.style.display = 'none';
   if(q.demo){ demo.style.display = 'flex'; demo.appendChild(q.demo); }
-  else if(state.game === 'animals'){
+  else if(q.kind === 'rainbow'){
+    demo.style.display = 'flex';
+    const w = document.createElement('div');
+    w.innerHTML = buildRainbowSVG(q.rainbow);
+    demo.appendChild(w);
+  }
+  else if(q.kind === 'find' && state.game === 'animals'){
     demo.style.display = 'flex';
     const m = document.createElement('div');
     m.className = 'q-mark'; m.textContent = '？';
@@ -979,6 +1128,9 @@ function renderQ(q){
 
   const grid = $('options');
   grid.innerHTML = '';
+  grid.className = '';
+  if(q.mode === 'compare'){ grid.classList.add('compare-panels'); renderCompare(q, grid); return; }
+  if(q.mode === 'order'){ grid.classList.add('order-field'); renderOrder(q, grid); return; }
   q.options.forEach((o, idx)=>{
     const el = document.createElement('button');
     el.className = 'opt';
@@ -994,6 +1146,71 @@ function renderQ(q){
     grid.appendChild(el);
   });
 }
+function renderCompare(q, grid){
+  [['left', q.left], ['right', q.right]].forEach(([side, count])=>{
+    const p = document.createElement('div');
+    p.className = 'compare-panel';
+    p.style.setProperty('--bc', side === 'left' ? '#FF6B6B' : '#4D96FF');
+    for(let i=0;i<count;i++){
+      const s = document.createElement('span');
+      s.className = 'count-item';
+      s.textContent = q.itemEmoji;
+      p.appendChild(s);
+    }
+    p.addEventListener('pointerdown', ()=>{
+      if(state.locked) return;
+      ensureAudio(); sfxPop();
+      if(side === q.moreSide){
+        state.locked = true;
+        p.classList.add('correct');
+        Array.from(grid.children).forEach(c=>{ if(c !== p) c.classList.add('dim'); });
+        bounceMascot();
+        finishCorrect(q, state.session);
+      } else {
+        state.streak = 0;
+        updateProgress(0);
+        p.classList.add('wrong');
+        setTimeout(()=>p.classList.remove('wrong'), 480);
+        sfxWrong();
+        speak(q.wrongSpeech ? q.wrongSpeech() : pick(TRY_AGAIN));
+      }
+    });
+    grid.appendChild(p);
+  });
+}
+function renderOrder(q, grid){
+  state.orderNext = 1;
+  const slots = sample([[4,8],[26,3],[48,9],[70,4],[88,14],[8,46],[30,42],[52,50],[74,44],[40,70]], q.orderN);
+  const nums = shuffle(Array.from({length:q.orderN}, (_,i)=>i+1));
+  nums.forEach((num, i)=>{
+    const chip = document.createElement('button');
+    chip.className = 'order-chip';
+    chip.style.setProperty('--bc', BORDER[i % BORDER.length]);
+    chip.style.left = slots[i][0] + '%';
+    chip.style.top = slots[i][1] + '%';
+    chip.textContent = num;
+    chip.addEventListener('pointerdown', ()=>{
+      if(state.locked) return;
+      ensureAudio();
+      if(num === state.orderNext){
+        chip.classList.add('done');
+        sfxPop(); speak(String(num));
+        state.orderNext++;
+        if(state.orderNext > q.orderN){
+          state.locked = true;
+          bounceMascot();
+          finishCorrect(q, state.session);
+        }
+      } else {
+        sfxWrong();
+        chip.classList.add('wrong');
+        setTimeout(()=>chip.classList.remove('wrong'), 480);
+        speak(`不对哦，下一个是${state.orderNext}！`);
+      }
+    });
+    grid.appendChild(chip);
+  });
+}
 function onPick(idx, el){
   if(state.locked) return;
   const q = state.q, o = q.options[idx];
@@ -1002,22 +1219,12 @@ function onPick(idx, el){
     state.locked = true;
     el.classList.add('correct');
     Array.from($('options').children).forEach(c=>{ if(c !== el) c.classList.add('dim'); });
-    state.streak++; state.stars++;
-    localStorage.setItem('kids_stars', state.stars);
-    updateStars(true);
-    updateProgress(state.streak % 5 === 0 ? 5 : state.streak % 5);
-    sfxCorrect(); bounceMascot(); confetti(42);
-    const big = state.streak % 5 === 0;
-    const sess = state.session;
-    (async ()=>{
-      await sayThen(`${pick(PRAISES)}${q.praise}`, {}, 900, 8000);
-      if(sess !== state.session) return;
-      await sleep(350);
-      if(sess !== state.session) return;
-      await swapOut();
-      if(sess !== state.session) return;
-      if(big) bigCelebrate(sess); else nextQ();
-    })();
+    if(q.kind === 'rainbow' && o.color){
+      const mb = document.getElementById('missingBand');
+      if(mb) mb.setAttribute('fill', o.color);
+    }
+    bounceMascot();
+    finishCorrect(q, state.session);
   } else {
     state.streak = 0;
     updateProgress(0);
@@ -1026,6 +1233,23 @@ function onPick(idx, el){
     sfxWrong();
     speak(q.wrongSpeech ? q.wrongSpeech(o) : pick(TRY_AGAIN));
   }
+}
+function finishCorrect(q, sess){
+  state.streak++; state.stars++;
+  localStorage.setItem('kids_stars', state.stars);
+  updateStars(true);
+  updateProgress();
+  sfxCorrect(); bounceMascot(); confetti(42);
+  const big = state.streak % 5 === 0;
+  (async ()=>{
+    await sayThen(`${pick(PRAISES)}${q.praise}`, {}, 900, 8000);
+    if(sess !== state.session) return;
+    await sleep(350);
+    if(sess !== state.session) return;
+    await swapOut();
+    if(sess !== state.session) return;
+    if(big) bigCelebrate(sess); else nextQ();
+  })();
 }
 function bigCelebrate(sess){
   const c = $('celebrate');
