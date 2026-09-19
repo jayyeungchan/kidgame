@@ -29,7 +29,7 @@
 | --- | --- |
 | index.html | 游戏本体，图片和字体都已内嵌，单文件即可运行 |
 | design/kidgame.pen | Pencil 设计稿（VS Code + Pencil 插件打开） |
-| design/exports/ | 卡通角色和奖品的高清透明 PNG 素材 |
+| design/exports/ | 卡通角色和奖品的高清透明 PNG 素材（含 14 只动物、全部手绘矢量，无表情包） |
 
 ## Docker 部署
 
