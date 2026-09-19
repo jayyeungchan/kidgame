@@ -8754,6 +8754,253 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "mjCzb",
+      "x": 9520,
+      "y": 0,
+      "name": "难度选择",
+      "clip": true,
+      "width": 1280,
+      "height": 800,
+      "fill": {
+        "type": "gradient",
+        "gradientType": "linear",
+        "enabled": true,
+        "rotation": 180,
+        "size": {
+          "height": 1
+        },
+        "colors": [
+          {
+            "color": "#FFD3E0",
+            "position": 0
+          },
+          {
+            "color": "#FFF6F0",
+            "position": 1
+          }
+        ]
+      },
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "zrKE7",
+          "x": 28,
+          "y": 24,
+          "name": "返回首页",
+          "width": 48,
+          "height": 48,
+          "fill": "#FFFFFF",
+          "cornerRadius": 24,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#3A3A6B22",
+            "offset": {
+              "x": 0,
+              "y": 3
+            },
+            "blur": 10
+          },
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "JHJE1",
+              "name": "家",
+              "width": 24,
+              "height": 24,
+              "icon": "house",
+              "library": "lucide",
+              "fill": "$c-ink"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "DQVwf",
+          "x": 0,
+          "y": 300,
+          "name": "标题",
+          "fill": "$c-ink",
+          "textGrowth": "fixed-width",
+          "width": 1280,
+          "content": "🔢 数字乐园",
+          "textAlign": "center",
+          "fontFamily": "$font-kid",
+          "fontSize": 46,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "S8MLt",
+          "x": 0,
+          "y": 364,
+          "name": "提示",
+          "fill": "#9A8FB8",
+          "textGrowth": "fixed-width",
+          "width": 1280,
+          "content": "选一个难度吧！",
+          "textAlign": "center",
+          "fontFamily": "$font-kid",
+          "fontSize": 20,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "gdKWj",
+          "x": 214,
+          "y": 430,
+          "name": "难度卡0",
+          "width": 260,
+          "height": 190,
+          "fill": "#F2FBF4",
+          "cornerRadius": 26,
+          "stroke": "$c-green",
+          "strokeWidth": 5,
+          "strokeAlignment": "outer",
+          "layout": "vertical",
+          "gap": 8,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "G11C4B",
+              "name": "星",
+              "fill": "$c-ink",
+              "content": "⭐",
+              "fontFamily": "ZCOOL KuaiLe",
+              "fontSize": 24,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "Ot6ta",
+              "name": "档",
+              "fill": "$c-ink",
+              "content": "简单",
+              "fontFamily": "$font-kid",
+              "fontSize": 30,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "w2QHf",
+              "name": "描述",
+              "fill": "#9A8FB8",
+              "content": "数字 1~5 · 数到 3",
+              "fontFamily": "$font-kid",
+              "fontSize": 15,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "pUF0K",
+          "x": 510,
+          "y": 430,
+          "name": "难度卡1",
+          "width": 260,
+          "height": 190,
+          "fill": "#F7F6FC",
+          "cornerRadius": 26,
+          "stroke": "#EDEAF8",
+          "strokeWidth": 5,
+          "strokeAlignment": "outer",
+          "layout": "vertical",
+          "gap": 8,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "BtHqd",
+              "name": "星",
+              "fill": "$c-ink",
+              "content": "⭐⭐",
+              "fontFamily": "ZCOOL KuaiLe",
+              "fontSize": 24,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "S1cFKp",
+              "name": "档",
+              "fill": "$c-ink",
+              "content": "普通",
+              "fontFamily": "$font-kid",
+              "fontSize": 30,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "VVlwP",
+              "name": "描述",
+              "fill": "#9A8FB8",
+              "content": "数字 1~10 · 数到 6",
+              "fontFamily": "$font-kid",
+              "fontSize": 15,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "HkMid",
+          "x": 806,
+          "y": 430,
+          "name": "难度卡2",
+          "width": 260,
+          "height": 190,
+          "fill": "#F7F6FC",
+          "cornerRadius": 26,
+          "stroke": "#EDEAF8",
+          "strokeWidth": 5,
+          "strokeAlignment": "outer",
+          "layout": "vertical",
+          "gap": 8,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "m2PacM",
+              "name": "星",
+              "fill": "$c-ink",
+              "content": "⭐⭐⭐",
+              "fontFamily": "ZCOOL KuaiLe",
+              "fontSize": 24,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "Gmq09",
+              "name": "档",
+              "fill": "$c-ink",
+              "content": "困难",
+              "fontFamily": "$font-kid",
+              "fontSize": 30,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "YkINt",
+              "name": "描述",
+              "fill": "#9A8FB8",
+              "content": "数字 1~20 · 数到 10",
+              "fontFamily": "$font-kid",
+              "fontSize": 15,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
     }
   ],
   "variables": {
